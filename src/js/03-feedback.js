@@ -3,50 +3,54 @@ import throttle from 'lodash.throttle';
 const feedbackForm = document.querySelector('.feedback-form');
 const inputMail = document.querySelector('input[name="email"]');
 const inputMessage = document.querySelector('textarea[name="message"]');
-
-let inputValues = {
-  email,
-  message,
-};
-
 const storageKey = 'feedback-form-state';
 
-feedbackForm.addEventListener('input', textInput);
+let inputValues = {
+  email: '',
+  message: '',
+};
+
+getSerializedData();
+
+feedbackForm.addEventListener('input', throttle(setInputText, 500));
 feedbackForm.addEventListener('submit', onSubmit);
 
-function textInput() {
+function setInputText() {
   try {
-    const { email, message } = inputValues;
-    email = inputMail.value;
-    message = inputMessage.value;
-
-    serializedData();
+    inputValues.email = inputMail.value;
+    inputValues.message = inputMessage.value;
+    const serializedData = JSON.stringify(inputValues);
+    localStorage.setItem(storageKey, serializedData);
   } catch (error) {
     console.error('set err', error.message);
   }
 }
 
-function onSubmit() {
-  if (inputMail === '' || inputMessage === '') {
-    alert('All fields must be filled');
-  }
-  console.log('Email:', inputValues.email);
-  console.log('Message:', inputValues.message);
-}
-
-function serializedData() {
-  localStorage.setItem(storageKey, JSON.stringify(inputValues));
-}
-
-function getData() {
-  const savedData = localStorage.getItem(storageKey);
-  const parcedSavedData = JSON.parse(savedData);
+function getSerializedData() {
   try {
-    if (savedData) {
-      inputMail.value = parcedSavedData.email;
-      inputMessage.value = parcedSavedData.message;
+    const getData = localStorage.getItem(storageKey);
+    if (getData === null) {
+      return (getData = undefined);
+    } else {
+      const parsedGetData = JSON.parse(getData);
+      inputMail.value = parsedGetData.email;
+      inputMessage.value = parsedGetData.message;
     }
   } catch (error) {
     console.error('get err', error.message);
   }
+}
+
+function onSubmit(e) {
+  e.preventDefault();
+  inputValues.email = inputMail.value;
+  inputValues.message = inputMessage.value;
+  if (inputValues.email.trim() === '' || inputValues.message.trim() === '') {
+    alert('All fields must be filled');
+    return;
+  }
+  console.log('Email:', inputValues.email);
+  console.log('Message:', inputValues.message);
+  e.currentTarget.reset();
+  localStorage.removeItem(storageKey);
 }
