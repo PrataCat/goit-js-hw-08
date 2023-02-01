@@ -6,6 +6,7 @@ import { galleryItems } from './gallery-items';
 const galleryUl = document.querySelector('.gallery');
 const galleryMarkup2 = createGalleryMarkup2(galleryItems);
 galleryUl.insertAdjacentHTML('beforeend', galleryMarkup2);
+
 var lightbox = new SimpleLightbox('.gallery a', {
   href: '${original}',
   src: '${preview}',
