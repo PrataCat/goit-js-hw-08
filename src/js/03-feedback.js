@@ -1,5 +1,7 @@
 import throttle from 'lodash.throttle';
 
+const throttle = require('lodash.throttle');
+
 const feedbackForm = document.querySelector('.feedback-form');
 const inputMail = document.querySelector('input[name="email"]');
 const inputMessage = document.querySelector('textarea[name="message"]');
@@ -28,7 +30,7 @@ function setInputText() {
 
 function getSerializedData() {
   try {
-    const getData = localStorage.getItem(storageKey);
+    let getData = localStorage.getItem(storageKey);
     if (getData === null) {
       return (getData = undefined);
     } else {
